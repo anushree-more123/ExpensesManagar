@@ -1,153 +1,187 @@
+// src/screens/Dashboard.tsx
+
 import React from 'react';
-import {View, Text, FlatList, StyleSheet} from 'react-native';
-import {Card, Avatar} from 'react-native-paper';
+import {View, Text, StyleSheet, FlatList, Dimensions} from 'react-native';
 import {BarChart} from 'react-native-chart-kit';
-import {Dimensions} from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+// import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const screenWidth = Dimensions.get('window').width;
+
+const barChartData = {
+  labels: ['', '', '', '', '', ''],
+  datasets: [
+    {
+      data: [50, 50, 75, 90, 60, 45],
+    },
+  ],
+};
+
+const chartConfig = {
+  backgroundGradientFrom: '#1e1e1e',
+  backgroundGradientTo: '#1e1e1e',
+  fillShadowGradient: '#5c6bc0',
+  fillShadowGradientOpacity: 1,
+  color: () => '#5c6bc0',
+  barPercentage: 0.6,
+  decimalPlaces: 0,
+};
 
 const transactions = [
   {
     id: '1',
-    category: 'Grocery',
-    amount: '$120',
-    date: 'Apr 24',
+    type: 'Grocery',
     icon: 'cart-outline',
-    color: '#FFA07A',
+    amount: 120,
+    date: 'Apr 24',
+    balance: 120,
+    color: '#f57c00',
   },
   {
     id: '2',
-    category: 'Transport',
-    amount: '$20',
+    type: 'Transport',
+    icon: 'bus',
+    amount: 20,
     date: 'Apr 23',
-    icon: 'car-outline',
-    color: '#4682B4',
+    balance: 74,
+    color: '#3949ab',
   },
   {
     id: '3',
-    category: 'Shopping',
-    amount: '$75',
+    type: 'Shopping',
+    icon: 'shopping-outline',
+    amount: 75,
     date: 'Apr 14',
-    icon: 'bag-outline',
-    color: '#FF69B4',
+    balance: 20,
+    color: '#d81b60',
   },
   {
     id: '4',
-    category: 'Entertainment',
-    amount: '$50',
+    type: 'Entertainment',
+    icon: 'music',
+    amount: 50,
     date: 'Apr 12',
-    icon: 'videocam-outline',
-    color: '#FFA500',
+    balance: 80,
+    color: '#ff7043',
   },
 ];
 
-const chartData = {
-  labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
-  datasets: [{data: [200, 300, 400, 500, 600]}],
-};
-
 const Dashboard = () => {
   return (
-    <View style={styles.container}>
-      {/* Expense Tracker Header */}
+    <LinearGradient colors={['#121212', '#1f1f1f']} style={styles.container}>
       <Text style={styles.title}>Expense Tracker</Text>
-      <Text style={styles.balance}>$950.00</Text>
-      {/* Bar Chart */}
-      <BarChart
-        data={chartData}
-        width={screenWidth - 40}
-        height={150}
-        chartConfig={{
-          backgroundGradientFrom: '#1E1E1E',
-          backgroundGradientTo: '#1E1E1E',
-          color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-        }}
-        style={styles.chart}
-        fromZero={true} // Ensure it's a boolean
-        yAxisLabel="$" // Add yAxisLabel (e.g., "$" for currency)
-        yAxisSuffix="k" // Add yAxisSuffix (e.g., "k" for thousands)
-      />
-      ;{/* Recent Transactions */}
-      <Text style={styles.sectionTitle}>Recent Transactions</Text>
+
+      <View style={styles.card}>
+        <Text style={styles.amount}>$950.00</Text>
+        <BarChart
+          data={barChartData}
+          width={screenWidth - 40}
+          height={180}
+          chartConfig={chartConfig}
+          withInnerLines={false}
+          fromZero
+          showValuesOnTopOfBars={false}
+          style={styles.chart}
+          yAxisLabel="$"
+          yAxisSuffix=""
+        />
+      </View>
+
+      <Text style={styles.subtitle}>Recent Transactions</Text>
       <FlatList
         data={transactions}
         keyExtractor={item => item.id}
         renderItem={({item}) => (
-          <Card style={styles.card}>
-            <View style={styles.cardContent}>
-              <Avatar.Icon
-                size={40}
-                icon={item.icon}
-                style={{backgroundColor: item.color}}
-              />
-              <View style={styles.textContainer}>
-                <Text style={styles.category}>{item.category}</Text>
-                <Text style={styles.date}>{item.date}</Text>
-              </View>
-              <Text style={styles.amount}>{item.amount}</Text>
+          <View style={styles.transaction}>
+            <View style={[styles.iconContainer, {backgroundColor: item.color}]}>
+              {/* <Icon name={item.icon} size={22} color="#fff" /> */}
             </View>
-          </Card>
+            <View style={styles.info}>
+              <Text style={styles.type}>{item.type}</Text>
+              <Text style={styles.date}>{item.date}</Text>
+            </View>
+            <View style={styles.right}>
+              <Text style={styles.amountText}>${item.amount}</Text>
+              <Text style={styles.balance}>${item.balance}</Text>
+            </View>
+          </View>
         )}
       />
-    </View>
+    </LinearGradient>
   );
 };
+
+export default Dashboard;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: 60,
+    paddingHorizontal: 20,
     backgroundColor: '#121212',
-    padding: 20,
   },
   title: {
     fontSize: 24,
-    color: '#FFF',
+    color: '#fff',
     fontWeight: 'bold',
   },
-  balance: {
-    fontSize: 32,
-    color: '#FFF',
-    fontWeight: 'bold',
-    marginVertical: 10,
-  },
-  chart: {
-    borderRadius: 10,
+  card: {
+    backgroundColor: '#1e1e1e',
+    borderRadius: 20,
+    padding: 20,
     marginVertical: 20,
   },
-  sectionTitle: {
-    fontSize: 18,
-    color: '#FFF',
+  amount: {
+    fontSize: 30,
+    color: '#fff',
     fontWeight: 'bold',
     marginBottom: 10,
   },
-  card: {
-    backgroundColor: '#1E1E1E',
-    marginVertical: 5,
-    borderRadius: 10,
-    padding: 10,
+  chart: {
+    borderRadius: 12,
   },
-  cardContent: {
+  subtitle: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  transaction: {
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: '#1e1e1e',
+    borderRadius: 15,
+    padding: 15,
+    marginBottom: 12,
   },
-  textContainer: {
+  iconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 15,
+  },
+  info: {
     flex: 1,
-    marginLeft: 10,
   },
-  category: {
-    fontSize: 16,
-    color: '#FFF',
+  type: {
+    color: '#fff',
     fontWeight: 'bold',
   },
   date: {
+    color: '#aaa',
     fontSize: 12,
-    color: '#AAA',
   },
-  amount: {
-    fontSize: 16,
-    color: '#FFF',
+  right: {
+    alignItems: 'flex-end',
+  },
+  amountText: {
+    color: '#fff',
     fontWeight: 'bold',
   },
+  balance: {
+    color: '#aaa',
+    fontSize: 12,
+  },
 });
-
-export default Dashboard;
