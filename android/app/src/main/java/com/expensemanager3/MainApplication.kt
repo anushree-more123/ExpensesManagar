@@ -1,4 +1,4 @@
-package com.expensemanager3
+package com.expensemanager
 
 import android.app.Application
 import com.facebook.react.PackageList
