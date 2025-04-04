@@ -1,10 +1,18 @@
 // src/screens/Dashboard.tsx
 
 import React from 'react';
-import {View, Text, StyleSheet, FlatList, Dimensions} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  Dimensions,
+  Image,
+} from 'react-native';
 import {BarChart} from 'react-native-chart-kit';
 import LinearGradient from 'react-native-linear-gradient';
-// import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+// @ts-ignore
+import Icon from 'react-native-vector-icons/FontAwesome6';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -31,7 +39,7 @@ const transactions = [
   {
     id: '1',
     type: 'Grocery',
-    icon: 'cart-outline',
+    icon: 'cart-shopping',
     amount: 120,
     date: 'Apr 24',
     balance: 120,
@@ -49,7 +57,7 @@ const transactions = [
   {
     id: '3',
     type: 'Shopping',
-    icon: 'shopping-outline',
+    icon: 'bag-shopping',
     amount: 75,
     date: 'Apr 14',
     balance: 20,
@@ -88,13 +96,14 @@ const Dashboard = () => {
       </View>
 
       <Text style={styles.subtitle}>Recent Transactions</Text>
+
       <FlatList
         data={transactions}
         keyExtractor={item => item.id}
         renderItem={({item}) => (
           <View style={styles.transaction}>
             <View style={[styles.iconContainer, {backgroundColor: item.color}]}>
-              {/* <Icon name={item.icon} size={22} color="#fff" /> */}
+              <Icon name={item.icon} size={25} color="#fff" />
             </View>
             <View style={styles.info}>
               <Text style={styles.type}>{item.type}</Text>
@@ -116,7 +125,7 @@ export default Dashboard;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 60,
+    paddingTop: 30,
     paddingHorizontal: 20,
     backgroundColor: '#121212',
   },
@@ -128,7 +137,6 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: '#1e1e1e',
     borderRadius: 20,
-    padding: 20,
     marginVertical: 20,
   },
   amount: {
@@ -136,6 +144,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     marginBottom: 10,
+    padding: 20,
   },
   chart: {
     borderRadius: 12,
