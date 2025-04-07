@@ -10,7 +10,7 @@ A modern **expense tracking app** built using **React Native**, allowing users t
 - 📊 Track daily, weekly, and monthly expenses
 - 🧾 Categorize expenses (e.g., Grocery, Transport, Entertainment)
 - 💰 Set spending limits and track budget utilization
-- ✨ Smooth and user-friendly dark-themed UI
+- ✨ Clean, responsive interface that follows your device’s light or dark mode
 
 ---
 
