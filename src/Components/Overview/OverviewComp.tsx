@@ -1,5 +1,3 @@
-// src/screens/Dashboard.tsx
-
 import React from 'react';
 import {
   View,
@@ -11,6 +9,7 @@ import {
 } from 'react-native';
 import {BarChart} from 'react-native-chart-kit';
 import LinearGradient from 'react-native-linear-gradient';
+import {useTheme} from 'react-native-paper';
 // @ts-ignore
 import Icon from 'react-native-vector-icons/FontAwesome6';
 
@@ -18,21 +17,7 @@ const screenWidth = Dimensions.get('window').width;
 
 const barChartData = {
   labels: ['', '', '', '', '', ''],
-  datasets: [
-    {
-      data: [50, 50, 75, 90, 60, 45],
-    },
-  ],
-};
-
-const chartConfig = {
-  backgroundGradientFrom: '#1e1e1e',
-  backgroundGradientTo: '#1e1e1e',
-  fillShadowGradient: '#5c6bc0',
-  fillShadowGradientOpacity: 1,
-  color: () => '#5c6bc0',
-  barPercentage: 0.6,
-  decimalPlaces: 0,
+  datasets: [{data: [50, 50, 75, 90, 60, 45]}],
 };
 
 const transactions = [
@@ -74,9 +59,14 @@ const transactions = [
   },
 ];
 
-const Dashboard = () => {
+const OverviewComp = () => {
+  const {colors, dark} = useTheme(); // 🔥 access theme
+  const styles = getStyles(colors, dark);
+
   return (
-    <LinearGradient colors={['#121212', '#1f1f1f']} style={styles.container}>
+    <LinearGradient
+      colors={dark ? ['#121212', '#1f1f1f'] : ['#f2f2f2', '#ffffff']}
+      style={styles.container}>
       <Text style={styles.title}>Expense Tracker</Text>
 
       <View style={styles.card}>
@@ -85,7 +75,15 @@ const Dashboard = () => {
           data={barChartData}
           width={screenWidth - 40}
           height={180}
-          chartConfig={chartConfig}
+          chartConfig={{
+            backgroundGradientFrom: colors.surface,
+            backgroundGradientTo: colors.surface,
+            fillShadowGradient: '#5c6bc0',
+            fillShadowGradientOpacity: 1,
+            color: () => (dark ? '#5c6bc0' : '#3949ab'),
+            barPercentage: 0.6,
+            decimalPlaces: 0,
+          }}
           withInnerLines={false}
           fromZero
           showValuesOnTopOfBars={false}
@@ -120,77 +118,78 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default OverviewComp;
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 30,
-    paddingHorizontal: 20,
-    backgroundColor: '#121212',
-  },
-  title: {
-    fontSize: 24,
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-  card: {
-    backgroundColor: '#1e1e1e',
-    borderRadius: 20,
-    marginVertical: 20,
-  },
-  amount: {
-    fontSize: 30,
-    color: '#fff',
-    fontWeight: 'bold',
-    marginBottom: 10,
-    padding: 20,
-  },
-  chart: {
-    borderRadius: 12,
-  },
-  subtitle: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  transaction: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#1e1e1e',
-    borderRadius: 15,
-    padding: 15,
-    marginBottom: 12,
-  },
-  iconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 15,
-  },
-  info: {
-    flex: 1,
-  },
-  type: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-  date: {
-    color: '#aaa',
-    fontSize: 12,
-  },
-  right: {
-    alignItems: 'flex-end',
-  },
-  amountText: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-  balance: {
-    color: '#aaa',
-    fontSize: 12,
-  },
-});
+const getStyles = (colors: any, isDark: boolean) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      paddingTop: 30,
+      paddingHorizontal: 20,
+      backgroundColor: colors.background,
+    },
+    title: {
+      fontSize: 24,
+      color: colors.text,
+      fontWeight: 'bold',
+    },
+    card: {
+      backgroundColor: colors.surface,
+      borderRadius: 20,
+      marginVertical: 20,
+    },
+    amount: {
+      fontSize: 30,
+      color: colors.text,
+      fontWeight: 'bold',
+      marginBottom: 10,
+      padding: 20,
+    },
+    chart: {
+      borderRadius: 12,
+    },
+    subtitle: {
+      color: colors.text,
+      fontSize: 16,
+      fontWeight: 'bold',
+      marginBottom: 10,
+    },
+    transaction: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: isDark ? '#1e1e1e' : '#f5f5f5',
+      borderRadius: 15,
+      padding: 15,
+      marginBottom: 12,
+    },
+    iconContainer: {
+      width: 40,
+      height: 40,
+      borderRadius: 12,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: 15,
+    },
+    info: {
+      flex: 1,
+    },
+    type: {
+      color: colors.text,
+      fontWeight: 'bold',
+    },
+    date: {
+      color: isDark ? '#aaa' : '#444',
+      fontSize: 12,
+    },
+    right: {
+      alignItems: 'flex-end',
+    },
+    amountText: {
+      color: colors.text,
+      fontWeight: 'bold',
+    },
+    balance: {
+      color: isDark ? '#aaa' : '#555',
+      fontSize: 12,
+    },
+  });
