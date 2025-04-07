@@ -1,5 +1,3 @@
-// src/screens/Dashboard.tsx
-
 import React from 'react';
 import {
   View,
@@ -8,10 +6,10 @@ import {
   FlatList,
   Dimensions,
   Image,
-  useColorScheme,
 } from 'react-native';
 import {BarChart} from 'react-native-chart-kit';
 import LinearGradient from 'react-native-linear-gradient';
+import {useTheme} from 'react-native-paper';
 // @ts-ignore
 import Icon from 'react-native-vector-icons/FontAwesome6';
 
@@ -19,21 +17,7 @@ const screenWidth = Dimensions.get('window').width;
 
 const barChartData = {
   labels: ['', '', '', '', '', ''],
-  datasets: [
-    {
-      data: [50, 50, 75, 90, 60, 45],
-    },
-  ],
-};
-
-const chartConfig = {
-  backgroundGradientFrom: '#1e1e1e',
-  backgroundGradientTo: '#1e1e1e',
-  fillShadowGradient: '#5c6bc0',
-  fillShadowGradientOpacity: 1,
-  color: () => '#5c6bc0',
-  barPercentage: 0.6,
-  decimalPlaces: 0,
+  datasets: [{data: [50, 50, 75, 90, 60, 45]}],
 };
 
 const transactions = [
@@ -75,60 +59,57 @@ const transactions = [
   },
 ];
 
-const Dashboard = () => {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
-
-  const themedStyles = getStyles(isDark);
+const OverviewComp = () => {
+  const {colors, dark} = useTheme(); // 🔥 access theme
+  const styles = getStyles(colors, dark);
 
   return (
     <LinearGradient
-      colors={isDark ? ['#121212', '#1f1f1f'] : ['#f2f2f2', '#ffffff']}
-      style={themedStyles.container}>
-      <Text style={themedStyles.title}>Expense Tracker</Text>
+      colors={dark ? ['#121212', '#1f1f1f'] : ['#f2f2f2', '#ffffff']}
+      style={styles.container}>
+      <Text style={styles.title}>Expense Tracker</Text>
 
-      <View style={themedStyles.card}>
-        <Text style={themedStyles.amount}>$950.00</Text>
+      <View style={styles.card}>
+        <Text style={styles.amount}>$950.00</Text>
         <BarChart
           data={barChartData}
           width={screenWidth - 40}
           height={180}
           chartConfig={{
-            ...chartConfig,
-            backgroundGradientFrom: isDark ? '#1e1e1e' : '#f2f2f2',
-            backgroundGradientTo: isDark ? '#1e1e1e' : '#ffffff',
-            color: () => (isDark ? '#5c6bc0' : '#3949ab'),
+            backgroundGradientFrom: colors.surface,
+            backgroundGradientTo: colors.surface,
+            fillShadowGradient: '#5c6bc0',
+            fillShadowGradientOpacity: 1,
+            color: () => (dark ? '#5c6bc0' : '#3949ab'),
+            barPercentage: 0.6,
+            decimalPlaces: 0,
           }}
           withInnerLines={false}
           fromZero
           showValuesOnTopOfBars={false}
-          style={themedStyles.chart}
+          style={styles.chart}
           yAxisLabel="$"
           yAxisSuffix=""
         />
       </View>
 
-      <Text style={themedStyles.subtitle}>Recent Transactions</Text>
+      <Text style={styles.subtitle}>Recent Transactions</Text>
 
       <FlatList
         data={transactions}
         keyExtractor={item => item.id}
         renderItem={({item}) => (
-          <View style={themedStyles.transaction}>
-            <View
-              style={[
-                themedStyles.iconContainer,
-                {backgroundColor: item.color},
-              ]}>
+          <View style={styles.transaction}>
+            <View style={[styles.iconContainer, {backgroundColor: item.color}]}>
               <Icon name={item.icon} size={25} color="#fff" />
             </View>
-            <View style={themedStyles.info}>
-              <Text style={themedStyles.type}>{item.type}</Text>
-              <Text style={themedStyles.date}>{item.date}</Text>
+            <View style={styles.info}>
+              <Text style={styles.type}>{item.type}</Text>
+              <Text style={styles.date}>{item.date}</Text>
             </View>
-            <View style={themedStyles.right}>
-              <Text style={themedStyles.amountText}>${item.amount}</Text>
-              <Text style={themedStyles.balance}>${item.balance}</Text>
+            <View style={styles.right}>
+              <Text style={styles.amountText}>${item.amount}</Text>
+              <Text style={styles.balance}>${item.balance}</Text>
             </View>
           </View>
         )}
@@ -137,29 +118,29 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default OverviewComp;
 
-const getStyles = (isDark: boolean) =>
+const getStyles = (colors: any, isDark: boolean) =>
   StyleSheet.create({
     container: {
       flex: 1,
       paddingTop: 30,
       paddingHorizontal: 20,
-      backgroundColor: isDark ? '#121212' : '#ffffff',
+      backgroundColor: colors.background,
     },
     title: {
       fontSize: 24,
-      color: isDark ? '#fff' : '#000',
+      color: colors.text,
       fontWeight: 'bold',
     },
     card: {
-      backgroundColor: isDark ? '#1e1e1e' : '#e0e0e0',
+      backgroundColor: colors.surface,
       borderRadius: 20,
       marginVertical: 20,
     },
     amount: {
       fontSize: 30,
-      color: isDark ? '#fff' : '#000',
+      color: colors.text,
       fontWeight: 'bold',
       marginBottom: 10,
       padding: 20,
@@ -168,7 +149,7 @@ const getStyles = (isDark: boolean) =>
       borderRadius: 12,
     },
     subtitle: {
-      color: isDark ? '#fff' : '#000',
+      color: colors.text,
       fontSize: 16,
       fontWeight: 'bold',
       marginBottom: 10,
@@ -193,7 +174,7 @@ const getStyles = (isDark: boolean) =>
       flex: 1,
     },
     type: {
-      color: isDark ? '#fff' : '#000',
+      color: colors.text,
       fontWeight: 'bold',
     },
     date: {
@@ -204,7 +185,7 @@ const getStyles = (isDark: boolean) =>
       alignItems: 'flex-end',
     },
     amountText: {
-      color: isDark ? '#fff' : '#000',
+      color: colors.text,
       fontWeight: 'bold',
     },
     balance: {

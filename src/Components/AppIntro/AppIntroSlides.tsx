@@ -1,9 +1,11 @@
 import React from 'react';
-import {View, Text, Image, StyleSheet, useColorScheme} from 'react-native';
+import {View, Text, Image, StyleSheet} from 'react-native';
 import AppIntroSlider from 'react-native-app-intro-slider';
-import SLIDEONEIMG from '../../assets/SlideOne.png';
-import SLIDTWOIMG from '../../assets/SlideTwo.png';
-import SLIDETHREEIMG from '../../assets/SlideThree.png';
+import {useTheme} from 'react-native-paper';
+
+import SLIDEONEIMG from '../../../assets/SlideOne.png';
+import SLIDTWOIMG from '../../../assets/SlideTwo.png';
+import SLIDETHREEIMG from '../../../assets/SlideThree.png';
 
 type AppIntroSlidesProps = {
   onDone: () => void;
@@ -38,10 +40,8 @@ const slides: SlideItem[] = [
 ];
 
 const AppIntroSlides: React.FC<AppIntroSlidesProps> = ({onDone}) => {
-  const theme = useColorScheme(); // 'light' or 'dark'
-  const isDark = theme === 'dark';
-
-  const styles = getStyles(isDark);
+  const {colors} = useTheme();
+  const styles = getStyles(colors);
 
   const renderItem = ({item}: {item: SlideItem}) => (
     <View style={styles.slide}>
@@ -63,11 +63,11 @@ const AppIntroSlides: React.FC<AppIntroSlidesProps> = ({onDone}) => {
   );
 };
 
-const getStyles = (isDark: any) =>
+const getStyles = (colors: any) =>
   StyleSheet.create({
     slide: {
       flex: 1,
-      backgroundColor: isDark ? '#0C0C0E' : '#FFFFFF',
+      backgroundColor: colors.background,
       justifyContent: 'center',
       alignItems: 'center',
       paddingHorizontal: 30,
@@ -79,22 +79,30 @@ const getStyles = (isDark: any) =>
       resizeMode: 'contain',
     },
     title: {
-      color: isDark ? '#FFFFFF' : '#000000',
+      color: colors.onBackground,
       fontSize: 22,
       fontWeight: 'bold',
       textAlign: 'center',
       marginBottom: 10,
     },
     text: {
-      color: isDark ? '#BBBBBB' : '#444444',
+      color: colors.onSurface,
       fontSize: 16,
       textAlign: 'center',
     },
     dot: {
-      backgroundColor: isDark ? '#444' : '#CCC',
+      backgroundColor: colors.outline + '66',
+      width: 8,
+      height: 8,
+      borderRadius: 4,
+      marginHorizontal: 4,
     },
     activeDot: {
-      backgroundColor: isDark ? '#FFFFFF' : '#000000',
+      backgroundColor: colors.primary,
+      width: 10,
+      height: 10,
+      borderRadius: 5,
+      marginHorizontal: 4,
     },
   });
 

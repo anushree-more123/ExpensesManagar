@@ -1,21 +1,29 @@
 import React, {useState} from 'react';
-import {SafeAreaView, StyleSheet} from 'react-native';
-import Dashboard from './src/Dashboard/Dashboard';
-import AppIntroSlides from './src/AppIntro/AppIntroSlides';
+import {useColorScheme, StyleSheet} from 'react-native';
+import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context';
+import {Provider as PaperProvider} from 'react-native-paper';
+
+import AppIntroSlides from './src/Components/AppIntro/AppIntroSlides';
+import MainTabNavigator from './src/Components/Navigation/MainTabNavigator';
+import {lightTheme, darkTheme} from './src/theme/theme'; // ⬅️ import themes
 
 function App(): React.JSX.Element {
   const [isDone, setIsDone] = useState(false);
-  const checkIntroDone = () => {
-    setIsDone(true);
-  };
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
+
   return (
-    <SafeAreaView style={styles.container}>
-      {!isDone ? (
-        <AppIntroSlides onDone={() => checkIntroDone()} />
-      ) : (
-        <Dashboard />
-      )}
-    </SafeAreaView>
+    <PaperProvider theme={isDark ? darkTheme : lightTheme}>
+      <SafeAreaProvider>
+        <SafeAreaView style={styles.container}>
+          {!isDone ? (
+            <AppIntroSlides onDone={() => setIsDone(true)} />
+          ) : (
+            <MainTabNavigator />
+          )}
+        </SafeAreaView>
+      </SafeAreaProvider>
+    </PaperProvider>
   );
 }
 
