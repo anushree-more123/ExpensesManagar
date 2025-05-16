@@ -4,6 +4,7 @@ import {useTheme, Surface} from 'react-native-paper';
 // @ts-ignore
 import Icon from 'react-native-vector-icons/FontAwesome6';
 import HexagonFAB from '../Common/HexagonFab';
+import WelcomeScreen from '../Screens/WelcomeScreen';
 
 const tabs = [
   {key: 'overview', icon: 'house'},
@@ -13,19 +14,39 @@ const tabs = [
   {key: 'profile', icon: 'user'},
 ];
 
+const OverviewScreen = () => <Text>Overview Screen</Text>;
+const AnalyticsScreen = () => <Text>Analytics Screen</Text>;
+const AddExpenseScreen = () => <Text>Add Expense Screen</Text>;
+const ReportScreen = () => <Text>Report Screen</Text>;
+const ProfileScreen = () => <Text>Profile Screen</Text>;
+
 const MainTabNavigator = () => {
   const {colors} = useTheme();
   const [activeTab, setActiveTab] = useState('overview');
 
+  const renderScreen = () => {
+    switch (activeTab) {
+      case 'overview':
+        return <WelcomeScreen />;
+      case 'analytics':
+        return <AnalyticsScreen />;
+      case 'add':
+        return <AddExpenseScreen />;
+      case 'report':
+        return <ReportScreen />;
+      case 'profile':
+        return <ProfileScreen />;
+      default:
+        return <OverviewScreen />;
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <View style={styles.screen}>
-        <Text style={{color: colors.onBackground}}>Active: {activeTab}</Text>
-      </View>
+      <View style={styles.screen}>{renderScreen()}</View>
 
-      {/* Bottom Nav */}
       <Surface style={[styles.bottomBar, {backgroundColor: colors.surface}]}>
-        {tabs.map((tab, index) =>
+        {tabs.map(tab =>
           tab.key === 'center' ? (
             <HexagonFAB key="fab" onPress={() => setActiveTab('add')} />
           ) : (
@@ -61,7 +82,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    height: 65, // ⬅️ Smaller height
+    height: 65,
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     paddingHorizontal: 10,
