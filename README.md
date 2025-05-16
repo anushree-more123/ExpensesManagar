@@ -6,7 +6,6 @@ A modern **expense tracking app** built using **React Native**, allowing users t
 
 ## 📱 Features
 
-- 🚀 Onboarding carousel with multiple slides
 - 📊 Track daily, weekly, and monthly expenses
 - 🧾 Categorize expenses (e.g., Grocery, Transport, Entertainment)
 - 💰 Set spending limits and track budget utilization

@@ -1,29 +1,3 @@
-// import {MD3LightTheme, MD3DarkTheme} from 'react-native-paper';
-
-// export const lightTheme = {
-//   ...MD3LightTheme,
-//   colors: {
-//     ...MD3LightTheme.colors,
-//     primary: '#7F05F2',
-//     background: '#FFFFFF',
-//     surface: '#FFFFFF',
-//     text: '#000000',
-//   },
-// };
-
-// export const darkTheme = {
-//   ...MD3DarkTheme,
-//   colors: {
-//     ...MD3DarkTheme.colors,
-//     primary: '#7F05F2',
-//     background: '#0C0C0E',
-//     surface: '#1F1F1F',
-//     text: '#FFFFFF',
-//   },
-// };
-
-// src/theme/theme.ts
-// src/theme/theme.ts
 import {MD3LightTheme, MD3DarkTheme} from 'react-native-paper';
 
 export const lightTheme = {
