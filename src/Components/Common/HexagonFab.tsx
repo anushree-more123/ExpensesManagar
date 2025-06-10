@@ -3,22 +3,24 @@ import {StyleSheet, View, TouchableOpacity} from 'react-native';
 import Svg, {Defs, LinearGradient, Stop, Path} from 'react-native-svg';
 // @ts-ignore
 import Icon from 'react-native-vector-icons/FontAwesome6';
-import {themeColors} from '../../theme/themeColors';
+import {useTheme} from 'react-native-paper';
 
 const HexagonFAB = ({onPress}: {onPress: () => void}) => {
+  const {colors} = useTheme();
+
   return (
     <View style={styles.wrapper}>
       <Svg height="76" width="76" viewBox="0 0 100 100" style={styles.hexagon}>
         <Defs>
           <LinearGradient id="grad" x1="0" y1="0" x2="1" y2="1">
             <Stop offset="0%" stopColor="#B983FF" stopOpacity="1" />
-            <Stop offset="100%" stopColor={themeColors[500]} stopOpacity="1" />
+            <Stop offset="100%" stopColor={colors['700']} stopOpacity="1" />
           </LinearGradient>
         </Defs>
         <Path
           d="M50 5 L90 27 L90 72 L50 95 L10 72 L10 27 Z"
           fill="url(#grad)"
-          stroke={themeColors[500]}
+          stroke={colors['100']}
           strokeWidth="1.5"
           strokeLinejoin="round"
         />
