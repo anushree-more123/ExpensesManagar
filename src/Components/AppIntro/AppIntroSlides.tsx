@@ -59,6 +59,16 @@ const AppIntroSlides: React.FC<AppIntroSlidesProps> = ({onDone}) => {
       dotStyle={styles.dot}
       activeDotStyle={styles.activeDot}
       bottomButton
+      renderNextButton={() => (
+        <View style={styles.button}>
+          <Text style={styles.buttonText}>Next</Text>
+        </View>
+      )}
+      renderDoneButton={() => (
+        <View style={styles.button}>
+          <Text style={styles.buttonText}>Done</Text>
+        </View>
+      )}
     />
   );
 };
@@ -103,6 +113,19 @@ const getStyles = (colors: any) =>
       height: 10,
       borderRadius: 5,
       marginHorizontal: 4,
+    },
+    button: {
+      backgroundColor: colors[700],
+      paddingVertical: 10,
+      paddingHorizontal: 20,
+      borderRadius: 6,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    buttonText: {
+      color: '#fff',
+      fontSize: 16,
+      fontWeight: 'bold',
     },
   });
 

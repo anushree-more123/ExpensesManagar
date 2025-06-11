@@ -5,6 +5,7 @@ import {useTheme, Surface} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome6';
 import HexagonFAB from '../Common/HexagonFab';
 import WelcomeScreen from '../Screens/WelcomeScreen';
+import AddExpenseScreen from '../Screens/AddExpenseScreen';
 
 const tabs = [
   {key: 'overview', icon: 'house'},
@@ -16,7 +17,6 @@ const tabs = [
 
 const OverviewScreen = () => <Text>Overview Screen</Text>;
 const AnalyticsScreen = () => <Text>Analytics Screen</Text>;
-const AddExpenseScreen = () => <Text>Add Expense Screen</Text>;
 const ReportScreen = () => <Text>Report Screen</Text>;
 const ProfileScreen = () => <Text>Profile Screen</Text>;
 
