@@ -23,6 +23,7 @@
     "react-native-app-intro-slider": "^4.0.4",
     "react-native-chart-kit": "^6.12.0",
     "react-native-gesture-handler": "^2.25.0",
+    "react-native-gifted-charts": "^1.4.61",
     "react-native-linear-gradient": "^2.8.3",
     "react-native-paper": "^5.13.1",
     "react-native-safe-area-context": "^5.4.1",

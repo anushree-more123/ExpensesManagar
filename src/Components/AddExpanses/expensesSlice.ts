@@ -1,18 +1,33 @@
-import {createSlice} from '@reduxjs/toolkit';
+import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 
-const initialState = {
-  expensesList: [],
+export type ExpenseEntry = {
+  amount: string;
+  note: string;
+  date: string;
+  category: string;
+};
+
+type ExpensesState = {
+  expenseHistory: ExpenseEntry[];
+};
+
+const initialState: ExpensesState = {
+  expenseHistory: [],
 };
 
 const expensesSlice = createSlice({
   name: 'expenses',
   initialState,
   reducers: {
-    setExpensesList: (state, action) => {
-      state.expensesList = action.payload;
+    setExpenseHistory: (state, action: PayloadAction<ExpenseEntry[]>) => {
+      state.expenseHistory = action.payload;
+    },
+    addExpenseHistory: (state, action: PayloadAction<ExpenseEntry>) => {
+      state.expenseHistory.push(action.payload);
     },
   },
 });
 
-export const {setExpensesList} = expensesSlice.actions;
+export const {setExpenseHistory, addExpenseHistory} = expensesSlice.actions;
+
 export default expensesSlice.reducer;

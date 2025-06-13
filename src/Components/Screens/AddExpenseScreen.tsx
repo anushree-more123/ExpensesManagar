@@ -16,8 +16,10 @@ import Icon from 'react-native-vector-icons/FontAwesome6';
 // @ts-ignore
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {Button, useTheme} from 'react-native-paper';
-import {useDispatch} from 'react-redux';
-import {setExpensesList} from '../AddExpanses/expensesSlice';
+import {useDispatch, useSelector} from 'react-redux';
+import {addExpenseHistory} from '../AddExpanses/expensesSlice';
+import {RootState} from '../../Store/store';
+import {categories} from '../Constants/categories';
 
 interface AddExpenseScreenProps {
   navigation: any;
@@ -84,19 +86,6 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
     });
   };
 
-  const categories = [
-    {
-      label: 'Food and Drinks',
-      icon: 'pizza-slice',
-      color: '#FF7043',
-    },
-    {label: 'Leisure', icon: 'face-smile-wink', color: '#81C784'},
-    {label: 'Transportation', icon: 'bus', color: '#4FC3F7'},
-    {label: 'Health', icon: 'hand-holding-medical', color: '#FF2C2C'},
-    {label: 'Shopping', icon: 'cart-shopping', color: '#7B1FA2'},
-    {label: 'Utilities', icon: 'screwdriver-wrench', color: '#5A5A5A'},
-  ];
-
   const CalculatorKeyboard = () => {
     const keys = [
       '/',
@@ -156,16 +145,18 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
   };
 
   const saveExpense = () => {
-    let expensesList = [];
     if (expenseDetails.amount.length > 0) {
-      let cpyExpenseD = {...expenseDetails};
+      let cpyExpenseD = {
+        ...expenseDetails,
+        date: expenseDetails.date.toISOString(),
+      };
+
       if (cpyExpenseD.category.length === 0) {
         cpyExpenseD.category = 'Others';
       }
-      expensesList.push({...cpyExpenseD});
-      dispatch(setExpensesList(expensesList));
+
+      dispatch(addExpenseHistory(cpyExpenseD));
       closeAddExpenses();
-    } else {
     }
   };
 

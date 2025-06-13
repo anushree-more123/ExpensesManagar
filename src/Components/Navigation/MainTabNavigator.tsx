@@ -7,7 +7,7 @@ import HexagonFAB from '../Common/HexagonFab';
 import WelcomeScreen from '../Screens/WelcomeScreen';
 import {useSelector} from 'react-redux';
 import {RootState} from '../../Store/store';
-import ExpensesListScreen from '../Screens/ExpensesListScreen';
+import ExpenseHistoryScreen from '../Screens/ExpenseHistoryScreen';
 
 const tabs = [
   {key: 'overview', icon: 'house'},
@@ -31,14 +31,14 @@ const MainTabNavigator: React.FC<MainTabNavigatorProps> = ({
   route,
 }) => {
   const {colors} = useTheme();
-  const {expensesList} = useSelector((state: RootState) => state.expenses);
+  const {expenseHistory} = useSelector((state: RootState) => state.expenses);
   const [activeTab, setActiveTab] = useState('overview');
 
   const renderScreen = () => {
     switch (activeTab) {
       case 'overview':
-        if (expensesList.length > 0) {
-          return <ExpensesListScreen />;
+        if (expenseHistory.length > 0) {
+          return <ExpenseHistoryScreen />;
         } else {
           return <WelcomeScreen />;
         }
