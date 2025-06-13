@@ -1,11 +1,11 @@
+import './gesture-handler';
 import React, {useState} from 'react';
 import {useColorScheme, StyleSheet} from 'react-native';
 import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context';
 import {Provider as PaperProvider} from 'react-native-paper';
-
 import AppIntroSlides from './src/Components/AppIntro/AppIntroSlides';
-import MainTabNavigator from './src/Components/Navigation/MainTabNavigator';
-import {lightTheme, darkTheme} from './src/theme/theme'; // ⬅️ import themes
+import {lightTheme, darkTheme} from './src/theme/theme';
+import Navigator from './src/Components/Navigation/Navigator';
 
 function App(): React.JSX.Element {
   const [isDone, setIsDone] = useState(false);
@@ -19,7 +19,7 @@ function App(): React.JSX.Element {
           {!isDone ? (
             <AppIntroSlides onDone={() => setIsDone(true)} />
           ) : (
-            <MainTabNavigator />
+            <Navigator />
           )}
         </SafeAreaView>
       </SafeAreaProvider>
