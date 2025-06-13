@@ -15,32 +15,51 @@ import DateTimePicker, {
 import Icon from 'react-native-vector-icons/FontAwesome6';
 // @ts-ignore
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import {themeColors} from '../../theme/themeColors';
-import {Button} from 'react-native-paper';
+import {Button, useTheme} from 'react-native-paper';
+import {useDispatch, useSelector} from 'react-redux';
+import {addExpenseHistory} from '../AddExpanses/expensesSlice';
+import {RootState} from '../../Store/store';
+import {categories} from '../Constants/categories';
 
-const AddExpenseScreen = () => {
-  const [amount, setAmount] = useState('');
+interface AddExpenseScreenProps {
+  navigation: any;
+  route: any;
+}
+
+const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
+  navigation,
+  route,
+}) => {
+  const dispatch = useDispatch();
+  const initialState = {amount: '', note: '', date: new Date(), category: ''};
+  const {colors} = useTheme();
+  const styles = getStyles(colors);
   const [showDetails, setShowDetails] = useState(false);
-  const [category, setCategory] = useState('');
-  const [note, setNote] = useState('');
-  const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [expenseDetails, setExpenseDetails] = useState({...initialState});
 
   const handleKeyPress = (key: string) => {
     const operators = ['+', '-', '*', '/', '.'];
 
     if (key === 'C') {
-      setAmount('');
+      setExpenseDetails(prev => ({
+        ...prev,
+        amount: '',
+      }));
       return;
     }
 
     if (key === '✓') {
       try {
-        const cleanAmount = amount.replace(/[-*+\/.]+$/, '');
+        const cleanAmount = expenseDetails.amount.replace(/[-*+\/.]+$/, '');
         if (cleanAmount !== '') {
           const result = eval(cleanAmount);
           if (!isNaN(result)) {
-            setAmount(result.toFixed(2));
+            setExpenseDetails(prev => ({
+              ...prev,
+              amount: result.toFixed(2),
+            }));
+
             setShowDetails(true);
           }
         } else {
@@ -52,27 +71,20 @@ const AddExpenseScreen = () => {
       return;
     }
 
-    setAmount(prev => {
-      const lastChar = prev.slice(-1);
+    setExpenseDetails(prev => {
+      const lastChar = prev.amount.slice(-1);
       if (operators.includes(lastChar) && operators.includes(key)) {
-        return prev.slice(0, -1) + key;
+        return {
+          ...prev,
+          amount: prev.amount.slice(0, -1) + key,
+        };
       }
-      return prev + key;
+      return {
+        ...prev,
+        amount: prev.amount + key,
+      };
     });
   };
-
-  const categories = [
-    {
-      label: 'Food and Drinks',
-      icon: 'pizza-slice',
-      color: '#FF7043',
-    },
-    {label: 'Leisure', icon: 'face-smile-wink', color: '#81C784'},
-    {label: 'Transportation', icon: 'bus', color: '#4FC3F7'},
-    {label: 'Health', icon: 'hand-holding-medical', color: '#FF2C2C'},
-    {label: 'Shopping', icon: 'cart-shopping', color: themeColors[700]},
-    {label: 'Utilities', icon: 'screwdriver-wrench', color: '#5A5A5A'},
-  ];
 
   const CalculatorKeyboard = () => {
     const keys = [
@@ -110,16 +122,41 @@ const AddExpenseScreen = () => {
 
   const clearState = () => {
     setShowDetails(false);
-    setAmount('');
-    setCategory('');
-    setNote('');
-    setDate(new Date());
+    setExpenseDetails({...initialState});
   };
 
   const onChangeDate = (event: DateTimePickerEvent, selectedDate?: Date) => {
     setShowDatePicker(Platform.OS === 'ios');
     if (selectedDate) {
-      setDate(selectedDate);
+      setExpenseDetails(prev => ({
+        ...prev,
+        date: selectedDate,
+      }));
+    }
+  };
+
+  const closeAddExpenses = () => {
+    if (showDetails) {
+      clearState();
+      navigation.navigate('Home');
+    } else {
+      setShowDetails(true);
+    }
+  };
+
+  const saveExpense = () => {
+    if (expenseDetails.amount.length > 0) {
+      let cpyExpenseD = {
+        ...expenseDetails,
+        date: expenseDetails.date.toISOString(),
+      };
+
+      if (cpyExpenseD.category.length === 0) {
+        cpyExpenseD.category = 'Others';
+      }
+
+      dispatch(addExpenseHistory(cpyExpenseD));
+      closeAddExpenses();
     }
   };
 
@@ -127,7 +164,7 @@ const AddExpenseScreen = () => {
     <View style={styles.container}>
       <View style={{paddingHorizontal: 20}}>
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => clearState()}>
+          <TouchableOpacity onPress={() => closeAddExpenses()}>
             <AntDesign name="close" size={24} />
           </TouchableOpacity>
         </View>
@@ -140,12 +177,17 @@ const AddExpenseScreen = () => {
                 numberOfLines={1}
                 adjustsFontSizeToFit
                 minimumFontScale={0.3}>
-                {amount || '0.00'}
+                {expenseDetails.amount || '0.00'}
               </Text>
             </View>
-            {!showDetails && amount !== '' && (
+            {!showDetails && expenseDetails.amount !== '' && (
               <TouchableOpacity
-                onPress={() => setAmount(prev => prev.slice(0, -1))}
+                onPress={() => {
+                  setExpenseDetails(prev => ({
+                    ...prev,
+                    amount: prev.amount.slice(0, -1),
+                  }));
+                }}
                 style={{paddingHorizontal: 10, paddingVertical: 5}}>
                 <Icon name="delete-left" size={24} />
               </TouchableOpacity>
@@ -156,10 +198,7 @@ const AddExpenseScreen = () => {
 
       <View style={styles.flexArea}>
         {!showDetails ? (
-          <>
-            <View style={styles.flexSpacer} />
-            <CalculatorKeyboard />
-          </>
+          <CalculatorKeyboard />
         ) : (
           <View style={styles.detailsContainer}>
             <ScrollView>
@@ -170,18 +209,34 @@ const AddExpenseScreen = () => {
                     key={cat.label}
                     style={[
                       styles.categoryButton,
-                      category === cat.label && {backgroundColor: cat.color},
+                      expenseDetails.category === cat.label && {
+                        backgroundColor: cat.color,
+                      },
                     ]}
-                    onPress={() => setCategory(cat.label)}>
+                    onPress={() =>
+                      setExpenseDetails(prev => ({
+                        ...prev,
+                        category: cat.label,
+                      }))
+                    }>
                     <Icon
                       name={cat.icon}
                       size={24}
-                      color={category === cat.label ? '#fff' : cat.color}
+                      color={
+                        expenseDetails.category === cat.label
+                          ? '#fff'
+                          : cat.color
+                      }
                     />
                     <Text
                       style={[
                         styles.categoryLabel,
-                        {color: category === cat.label ? '#fff' : '#000'},
+                        {
+                          color:
+                            expenseDetails.category === cat.label
+                              ? '#fff'
+                              : '#000',
+                        },
                       ]}>
                       {cat.label}
                     </Text>
@@ -193,7 +248,9 @@ const AddExpenseScreen = () => {
               <TouchableOpacity onPress={() => setShowDatePicker(true)}>
                 <View style={styles.inputRow}>
                   <Icon name="calendar" size={20} style={styles.inputIcon} />
-                  <Text style={styles.input}>{date.toDateString()}</Text>
+                  <Text style={styles.input}>
+                    {expenseDetails.date.toDateString()}
+                  </Text>
                 </View>
               </TouchableOpacity>
 
@@ -201,15 +258,20 @@ const AddExpenseScreen = () => {
                 <Icon name="sticky-note" size={20} style={styles.inputIcon} />
                 <TextInput
                   placeholder="Add a note..."
-                  value={note}
-                  onChangeText={setNote}
+                  value={expenseDetails.note}
+                  onChangeText={text =>
+                    setExpenseDetails(prev => ({
+                      ...prev,
+                      note: text,
+                    }))
+                  }
                   style={styles.input}
                 />
               </View>
 
               {showDatePicker && (
                 <DateTimePicker
-                  value={date}
+                  value={expenseDetails.date}
                   mode="date"
                   onChange={onChangeDate}
                   display="spinner"
@@ -219,7 +281,7 @@ const AddExpenseScreen = () => {
 
             <Button
               mode="contained"
-              onPress={() => console.log({amount, category, note, date})}
+              onPress={() => saveExpense()}
               style={styles.saveButton}
               contentStyle={{paddingVertical: 8}}
               labelStyle={{fontSize: 16}}>
@@ -232,66 +294,75 @@ const AddExpenseScreen = () => {
   );
 };
 
-export default AddExpenseScreen;
+const getStyles = (colors: any) =>
+  StyleSheet.create({
+    container: {flex: 1, backgroundColor: '#fff', paddingTop: 20},
+    header: {flexDirection: 'row', justifyContent: 'space-between'},
+    amountMainContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginTop: 30,
+    },
+    amountContainer: {flexDirection: 'row', alignItems: 'flex-end'},
+    currencySymbol: {fontSize: 20, color: '#888', marginRight: 4},
+    amountText: {fontSize: 48},
+    flexArea: {
+      flexGrow: 1,
+      justifyContent: 'flex-end',
+    },
+    keyboard: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      justifyContent: 'space-between',
+      padding: 10,
+      backgroundColor: colors['900'],
+      marginBottom: 0,
+    },
+    keyButton: {
+      width: '22%',
+      justifyContent: 'center',
+      alignItems: 'center',
+      margin: '1%',
+      height: 80,
+    },
+    keyText: {fontSize: 30, color: colors['100']},
+    detailsContainer: {
+      flexGrow: 1,
+      paddingTop: 30,
+      paddingBottom: 80,
+      paddingHorizontal: 20,
+    },
+    sectionLabel: {fontSize: 16, marginBottom: 10, fontWeight: '500'},
+    categoryGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      justifyContent: 'space-between',
+    },
+    categoryButton: {
+      width: '32%',
+      backgroundColor: '#eee',
+      padding: 10,
+      marginBottom: '2%',
+      borderRadius: 8,
+      alignItems: 'center',
+      height: 100,
+      justifyContent: 'center',
+    },
+    categoryLabel: {marginTop: 6, fontSize: 14},
+    inputRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      borderBottomWidth: 1,
+      marginBottom: 20,
+    },
+    inputIcon: {marginRight: 8, color: '#555'},
+    input: {flex: 1, fontSize: 16, paddingVertical: 8},
+    saveButton: {
+      marginTop: 20,
+      borderRadius: 8,
+      backgroundColor: colors['700'],
+    },
+  });
 
-const styles = StyleSheet.create({
-  container: {flex: 1, backgroundColor: '#fff', paddingTop: 20},
-  header: {flexDirection: 'row', justifyContent: 'space-between'},
-  amountMainContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: 30,
-  },
-  amountContainer: {flexDirection: 'row', alignItems: 'flex-end'},
-  currencySymbol: {fontSize: 20, color: '#888', marginRight: 4},
-  amountText: {fontSize: 48},
-  flexArea: {flex: 1, justifyContent: 'space-between', paddingBottom: 10},
-  flexSpacer: {flex: 1},
-  keyboard: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    backgroundColor: themeColors[900],
-    padding: 10,
-  },
-  keyButton: {
-    width: '22%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    margin: '1%',
-    height: 80,
-  },
-  keyText: {fontSize: 30, color: themeColors[100]},
-  detailsContainer: {paddingTop: 30, paddingBottom: 100, paddingHorizontal: 20},
-  sectionLabel: {fontSize: 16, marginBottom: 10, fontWeight: '500'},
-  categoryGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  categoryButton: {
-    width: '32%',
-    backgroundColor: '#eee',
-    padding: 10,
-    marginBottom: '2%',
-    borderRadius: 8,
-    alignItems: 'center',
-    height: 100,
-    justifyContent: 'center',
-  },
-  categoryLabel: {marginTop: 6, fontSize: 14},
-  inputRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    marginBottom: 20,
-  },
-  inputIcon: {marginRight: 8, color: '#555'},
-  input: {flex: 1, fontSize: 16, paddingVertical: 8},
-  saveButton: {
-    marginTop: 20,
-    backgroundColor: themeColors[700],
-    borderRadius: 8,
-  },
-});
+export default AddExpenseScreen;

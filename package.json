@@ -11,19 +11,26 @@
   },
   "dependencies": {
     "@react-native-community/datetimepicker": "^8.4.1",
+    "@react-native-masked-view/masked-view": "^0.3.2",
     "@react-native-vector-icons/common": "^11.0.0",
     "@react-native-vector-icons/evil-icons": "^1.10.1",
     "@react-native-vector-icons/fontawesome6": "^6.7.1",
     "@react-navigation/native": "^7.1.10",
+    "@react-navigation/stack": "^7.3.3",
+    "@reduxjs/toolkit": "^2.8.2",
+    "moment": "^2.30.1",
     "react": "19.0.0",
     "react-native": "0.78.1",
     "react-native-app-intro-slider": "^4.0.4",
     "react-native-chart-kit": "^6.12.0",
+    "react-native-gesture-handler": "^2.25.0",
+    "react-native-gifted-charts": "^1.4.61",
     "react-native-linear-gradient": "^2.8.3",
     "react-native-paper": "^5.13.1",
     "react-native-safe-area-context": "^5.4.1",
     "react-native-screens": "^4.11.1",
-    "react-native-svg": "^15.11.2"
+    "react-native-svg": "^15.11.2",
+    "react-redux": "^9.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

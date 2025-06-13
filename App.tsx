@@ -1,29 +1,27 @@
-import React, {useState} from 'react';
+import './gesture-handler';
+import React from 'react';
 import {useColorScheme, StyleSheet} from 'react-native';
 import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context';
 import {Provider as PaperProvider} from 'react-native-paper';
-
-import AppIntroSlides from './src/Components/AppIntro/AppIntroSlides';
-import MainTabNavigator from './src/Components/Navigation/MainTabNavigator';
-import {lightTheme, darkTheme} from './src/theme/theme'; // ⬅️ import themes
+import {Provider} from 'react-redux';
+import {store} from './src/Store/store';
+import {lightTheme, darkTheme} from './src/theme/theme';
+import AppLoaded from './AppLoaded';
 
 function App(): React.JSX.Element {
-  const [isDone, setIsDone] = useState(false);
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
 
   return (
-    <PaperProvider theme={isDark ? darkTheme : lightTheme}>
-      <SafeAreaProvider>
-        <SafeAreaView style={styles.container}>
-          {!isDone ? (
-            <AppIntroSlides onDone={() => setIsDone(true)} />
-          ) : (
-            <MainTabNavigator />
-          )}
-        </SafeAreaView>
-      </SafeAreaProvider>
-    </PaperProvider>
+    <Provider store={store}>
+      <PaperProvider theme={isDark ? darkTheme : lightTheme}>
+        <SafeAreaProvider>
+          <SafeAreaView style={styles.container}>
+            <AppLoaded />
+          </SafeAreaView>
+        </SafeAreaProvider>
+      </PaperProvider>
+    </Provider>
   );
 }
 

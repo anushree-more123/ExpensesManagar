@@ -5,12 +5,14 @@ import {useTheme, Surface} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome6';
 import HexagonFAB from '../Common/HexagonFab';
 import WelcomeScreen from '../Screens/WelcomeScreen';
-import AddExpenseScreen from '../Screens/AddExpenseScreen';
+import {useSelector} from 'react-redux';
+import {RootState} from '../../Store/store';
+import ExpenseHistoryScreen from '../Screens/ExpenseHistoryScreen';
 
 const tabs = [
   {key: 'overview', icon: 'house'},
   {key: 'analytics', icon: 'chart-bar'},
-  {key: 'center', icon: 'plus'}, // Hex FAB
+  {key: 'center', icon: 'plus'},
   {key: 'report', icon: 'chart-simple'},
   {key: 'profile', icon: 'user'},
 ];
@@ -19,19 +21,29 @@ const OverviewScreen = () => <Text>Overview Screen</Text>;
 const AnalyticsScreen = () => <Text>Analytics Screen</Text>;
 const ReportScreen = () => <Text>Report Screen</Text>;
 const ProfileScreen = () => <Text>Profile Screen</Text>;
+interface MainTabNavigatorProps {
+  navigation: any;
+  route: any;
+}
 
-const MainTabNavigator = () => {
+const MainTabNavigator: React.FC<MainTabNavigatorProps> = ({
+  navigation,
+  route,
+}) => {
   const {colors} = useTheme();
+  const {expenseHistory} = useSelector((state: RootState) => state.expenses);
   const [activeTab, setActiveTab] = useState('overview');
 
   const renderScreen = () => {
     switch (activeTab) {
       case 'overview':
-        return <WelcomeScreen />;
+        if (expenseHistory.length > 0) {
+          return <ExpenseHistoryScreen />;
+        } else {
+          return <WelcomeScreen />;
+        }
       case 'analytics':
         return <AnalyticsScreen />;
-      case 'add':
-        return <AddExpenseScreen />;
       case 'report':
         return <ReportScreen />;
       case 'profile':
@@ -48,7 +60,10 @@ const MainTabNavigator = () => {
       <Surface style={[styles.bottomBar, {backgroundColor: colors.surface}]}>
         {tabs.map(tab =>
           tab.key === 'center' ? (
-            <HexagonFAB key="fab" onPress={() => setActiveTab('add')} />
+            <HexagonFAB
+              key="fab"
+              onPress={() => navigation.navigate('AddExpenses')}
+            />
           ) : (
             <TouchableOpacity
               key={tab.key}

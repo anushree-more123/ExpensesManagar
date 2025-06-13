@@ -2,7 +2,6 @@ import React from 'react';
 import {View, Text, Image, StyleSheet} from 'react-native';
 import AppIntroSlider from 'react-native-app-intro-slider';
 import {useTheme} from 'react-native-paper';
-
 import SLIDEONEIMG from '../../../assets/SlideOne.png';
 import SLIDTWOIMG from '../../../assets/SlideTwo.png';
 import SLIDETHREEIMG from '../../../assets/SlideThree.png';
