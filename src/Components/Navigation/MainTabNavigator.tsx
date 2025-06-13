@@ -5,6 +5,9 @@ import {useTheme, Surface} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome6';
 import HexagonFAB from '../Common/HexagonFab';
 import WelcomeScreen from '../Screens/WelcomeScreen';
+import {useSelector} from 'react-redux';
+import {RootState} from '../../Store/store';
+import ExpensesListScreen from '../Screens/ExpensesListScreen';
 
 const tabs = [
   {key: 'overview', icon: 'house'},
@@ -28,12 +31,17 @@ const MainTabNavigator: React.FC<MainTabNavigatorProps> = ({
   route,
 }) => {
   const {colors} = useTheme();
+  const {expensesList} = useSelector((state: RootState) => state.expenses);
   const [activeTab, setActiveTab] = useState('overview');
 
   const renderScreen = () => {
     switch (activeTab) {
       case 'overview':
-        return <WelcomeScreen />;
+        if (expensesList.length > 0) {
+          return <ExpensesListScreen />;
+        } else {
+          return <WelcomeScreen />;
+        }
       case 'analytics':
         return <AnalyticsScreen />;
       case 'report':

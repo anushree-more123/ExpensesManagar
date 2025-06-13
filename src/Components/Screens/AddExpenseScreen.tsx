@@ -16,6 +16,8 @@ import Icon from 'react-native-vector-icons/FontAwesome6';
 // @ts-ignore
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {Button, useTheme} from 'react-native-paper';
+import {useDispatch} from 'react-redux';
+import {setExpensesList} from '../AddExpanses/expensesSlice';
 
 interface AddExpenseScreenProps {
   navigation: any;
@@ -26,6 +28,7 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
   navigation,
   route,
 }) => {
+  const dispatch = useDispatch();
   const initialState = {amount: '', note: '', date: new Date(), category: ''};
   const {colors} = useTheme();
   const styles = getStyles(colors);
@@ -160,6 +163,7 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
         cpyExpenseD.category = 'Others';
       }
       expensesList.push({...cpyExpenseD});
+      dispatch(setExpensesList(expensesList));
       closeAddExpenses();
     } else {
     }
@@ -276,7 +280,7 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
 
               {showDatePicker && (
                 <DateTimePicker
-                  value={date}
+                  value={expenseDetails.date}
                   mode="date"
                   onChange={onChangeDate}
                   display="spinner"

@@ -6,6 +6,8 @@ import {Provider as PaperProvider} from 'react-native-paper';
 import AppIntroSlides from './src/Components/AppIntro/AppIntroSlides';
 import {lightTheme, darkTheme} from './src/theme/theme';
 import Navigator from './src/Components/Navigation/Navigator';
+import {Provider} from 'react-redux';
+import {store} from './src/Store/store';
 
 function App(): React.JSX.Element {
   const [isDone, setIsDone] = useState(false);
@@ -13,17 +15,19 @@ function App(): React.JSX.Element {
   const isDark = colorScheme === 'dark';
 
   return (
-    <PaperProvider theme={isDark ? darkTheme : lightTheme}>
-      <SafeAreaProvider>
-        <SafeAreaView style={styles.container}>
-          {!isDone ? (
-            <AppIntroSlides onDone={() => setIsDone(true)} />
-          ) : (
-            <Navigator />
-          )}
-        </SafeAreaView>
-      </SafeAreaProvider>
-    </PaperProvider>
+    <Provider store={store}>
+      <PaperProvider theme={isDark ? darkTheme : lightTheme}>
+        <SafeAreaProvider>
+          <SafeAreaView style={styles.container}>
+            {!isDone ? (
+              <AppIntroSlides onDone={() => setIsDone(true)} />
+            ) : (
+              <Navigator />
+            )}
+          </SafeAreaView>
+        </SafeAreaProvider>
+      </PaperProvider>
+    </Provider>
   );
 }
 
