@@ -26,30 +26,35 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
   navigation,
   route,
 }) => {
+  const initialState = {amount: '', note: '', date: new Date(), category: ''};
   const {colors} = useTheme();
   const styles = getStyles(colors);
-  const [amount, setAmount] = useState('');
   const [showDetails, setShowDetails] = useState(false);
-  const [category, setCategory] = useState('');
-  const [note, setNote] = useState('');
-  const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [expenseDetails, setExpenseDetails] = useState({...initialState});
 
   const handleKeyPress = (key: string) => {
     const operators = ['+', '-', '*', '/', '.'];
 
     if (key === 'C') {
-      setAmount('');
+      setExpenseDetails(prev => ({
+        ...prev,
+        amount: '',
+      }));
       return;
     }
 
     if (key === '✓') {
       try {
-        const cleanAmount = amount.replace(/[-*+\/.]+$/, '');
+        const cleanAmount = expenseDetails.amount.replace(/[-*+\/.]+$/, '');
         if (cleanAmount !== '') {
           const result = eval(cleanAmount);
           if (!isNaN(result)) {
-            setAmount(result.toFixed(2));
+            setExpenseDetails(prev => ({
+              ...prev,
+              amount: result.toFixed(2),
+            }));
+
             setShowDetails(true);
           }
         } else {
@@ -61,12 +66,18 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
       return;
     }
 
-    setAmount(prev => {
-      const lastChar = prev.slice(-1);
+    setExpenseDetails(prev => {
+      const lastChar = prev.amount.slice(-1);
       if (operators.includes(lastChar) && operators.includes(key)) {
-        return prev.slice(0, -1) + key;
+        return {
+          ...prev,
+          amount: prev.amount.slice(0, -1) + key,
+        };
       }
-      return prev + key;
+      return {
+        ...prev,
+        amount: prev.amount + key,
+      };
     });
   };
 
@@ -119,16 +130,16 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
 
   const clearState = () => {
     setShowDetails(false);
-    setAmount('');
-    setCategory('');
-    setNote('');
-    setDate(new Date());
+    setExpenseDetails({...initialState});
   };
 
   const onChangeDate = (event: DateTimePickerEvent, selectedDate?: Date) => {
     setShowDatePicker(Platform.OS === 'ios');
     if (selectedDate) {
-      setDate(selectedDate);
+      setExpenseDetails(prev => ({
+        ...prev,
+        date: selectedDate,
+      }));
     }
   };
 
@@ -138,6 +149,19 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
       navigation.navigate('Home');
     } else {
       setShowDetails(true);
+    }
+  };
+
+  const saveExpense = () => {
+    let expensesList = [];
+    if (expenseDetails.amount.length > 0) {
+      let cpyExpenseD = {...expenseDetails};
+      if (cpyExpenseD.category.length === 0) {
+        cpyExpenseD.category = 'Others';
+      }
+      expensesList.push({...cpyExpenseD});
+      closeAddExpenses();
+    } else {
     }
   };
 
@@ -158,12 +182,17 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
                 numberOfLines={1}
                 adjustsFontSizeToFit
                 minimumFontScale={0.3}>
-                {amount || '0.00'}
+                {expenseDetails.amount || '0.00'}
               </Text>
             </View>
-            {!showDetails && amount !== '' && (
+            {!showDetails && expenseDetails.amount !== '' && (
               <TouchableOpacity
-                onPress={() => setAmount(prev => prev.slice(0, -1))}
+                onPress={() => {
+                  setExpenseDetails(prev => ({
+                    ...prev,
+                    amount: prev.amount.slice(0, -1),
+                  }));
+                }}
                 style={{paddingHorizontal: 10, paddingVertical: 5}}>
                 <Icon name="delete-left" size={24} />
               </TouchableOpacity>
@@ -174,10 +203,7 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
 
       <View style={styles.flexArea}>
         {!showDetails ? (
-          <>
-            <View style={styles.flexSpacer} />
-            <CalculatorKeyboard />
-          </>
+          <CalculatorKeyboard />
         ) : (
           <View style={styles.detailsContainer}>
             <ScrollView>
@@ -188,18 +214,34 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
                     key={cat.label}
                     style={[
                       styles.categoryButton,
-                      category === cat.label && {backgroundColor: cat.color},
+                      expenseDetails.category === cat.label && {
+                        backgroundColor: cat.color,
+                      },
                     ]}
-                    onPress={() => setCategory(cat.label)}>
+                    onPress={() =>
+                      setExpenseDetails(prev => ({
+                        ...prev,
+                        category: cat.label,
+                      }))
+                    }>
                     <Icon
                       name={cat.icon}
                       size={24}
-                      color={category === cat.label ? '#fff' : cat.color}
+                      color={
+                        expenseDetails.category === cat.label
+                          ? '#fff'
+                          : cat.color
+                      }
                     />
                     <Text
                       style={[
                         styles.categoryLabel,
-                        {color: category === cat.label ? '#fff' : '#000'},
+                        {
+                          color:
+                            expenseDetails.category === cat.label
+                              ? '#fff'
+                              : '#000',
+                        },
                       ]}>
                       {cat.label}
                     </Text>
@@ -211,7 +253,9 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
               <TouchableOpacity onPress={() => setShowDatePicker(true)}>
                 <View style={styles.inputRow}>
                   <Icon name="calendar" size={20} style={styles.inputIcon} />
-                  <Text style={styles.input}>{date.toDateString()}</Text>
+                  <Text style={styles.input}>
+                    {expenseDetails.date.toDateString()}
+                  </Text>
                 </View>
               </TouchableOpacity>
 
@@ -219,8 +263,13 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
                 <Icon name="sticky-note" size={20} style={styles.inputIcon} />
                 <TextInput
                   placeholder="Add a note..."
-                  value={note}
-                  onChangeText={setNote}
+                  value={expenseDetails.note}
+                  onChangeText={text =>
+                    setExpenseDetails(prev => ({
+                      ...prev,
+                      note: text,
+                    }))
+                  }
                   style={styles.input}
                 />
               </View>
@@ -237,7 +286,7 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
 
             <Button
               mode="contained"
-              onPress={() => console.log({amount, category, note, date})}
+              onPress={() => saveExpense()}
               style={styles.saveButton}
               contentStyle={{paddingVertical: 8}}
               labelStyle={{fontSize: 16}}>
@@ -263,8 +312,10 @@ const getStyles = (colors: any) =>
     amountContainer: {flexDirection: 'row', alignItems: 'flex-end'},
     currencySymbol: {fontSize: 20, color: '#888', marginRight: 4},
     amountText: {fontSize: 48},
-    flexArea: {flex: 1, justifyContent: 'space-between', paddingBottom: 10},
-    flexSpacer: {flex: 1},
+    flexArea: {
+      flexGrow: 1,
+      justifyContent: 'flex-end',
+    },
     keyboard: {
       flexDirection: 'row',
       flexWrap: 'wrap',
@@ -282,8 +333,9 @@ const getStyles = (colors: any) =>
     },
     keyText: {fontSize: 30, color: colors['100']},
     detailsContainer: {
+      flexGrow: 1,
       paddingTop: 30,
-      paddingBottom: 100,
+      paddingBottom: 80,
       paddingHorizontal: 20,
     },
     sectionLabel: {fontSize: 16, marginBottom: 10, fontWeight: '500'},
