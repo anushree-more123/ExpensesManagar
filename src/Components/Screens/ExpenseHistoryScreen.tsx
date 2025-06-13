@@ -8,21 +8,30 @@ import {
   useColorScheme,
 } from 'react-native';
 import {useTheme} from 'react-native-paper';
+import {BarChart} from 'react-native-gifted-charts';
 // @ts-ignore
 import Icon from 'react-native-vector-icons/FontAwesome6';
 import {useSelector} from 'react-redux';
 import {getFormattedHistory} from '../Utils/getFormattedHistory';
 import {RootState} from '../../Store/store';
+import moment from 'moment';
+
+type BarDataItem = {
+  label: string;
+  value: number;
+};
 
 const ExpenseHistoryScreen = () => {
   const {colors} = useTheme();
   const isDark = useColorScheme() === 'dark';
   const styles = getStyles(colors, isDark);
+
   const expenseHistory = useSelector(
     (state: RootState) => state.expenses.expenseHistory,
   );
+
   const formattedHistory = getFormattedHistory(expenseHistory);
-  console.log('formattedHistory', formattedHistory);
+
   const renderItem = ({item}: any) => (
     <View style={styles.transactionItem}>
       <View style={[styles.iconWrapper, {backgroundColor: item.color}]}>
@@ -43,27 +52,53 @@ const ExpenseHistoryScreen = () => {
     <Text style={styles.sectionHeader}>{title}</Text>
   );
 
+  const monthlyTotals: BarDataItem[] = Object.values(
+    expenseHistory.reduce((acc: Record<string, BarDataItem>, entry) => {
+      const month = moment(entry.date).format('MMM');
+      const amount = parseFloat(entry.amount);
+      if (!acc[month]) {
+        acc[month] = {label: month, value: 0};
+      }
+      acc[month].value += isNaN(amount) ? 0 : amount;
+      return acc;
+    }, {}),
+  ).sort(
+    (a, b) => moment(a.label, 'MMM').month() - moment(b.label, 'MMM').month(),
+  );
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Outcome</Text>
-        <Text style={styles.cardAmount}>$12,560.00</Text>
-        <View style={styles.chartRow}>
-          {['Aug', 'Oct', 'Dec', 'Feb', 'Mar', 'Apr'].map((month, index) => (
-            <View key={month} style={styles.chartItem}>
-              <View
-                style={[
-                  styles.chartBar,
-                  {
-                    height: index === 5 ? 60 : 30 + index * 6,
-                    backgroundColor:
-                      index === 5 ? '#FF9F40' : isDark ? '#9986D6' : '#CCC4EB',
-                  },
-                ]}
-              />
-              <Text style={styles.chartMonth}>{month}</Text>
-            </View>
-          ))}
+        <Text style={styles.cardAmount}>
+          {' '}
+          ₹
+          {expenseHistory
+            .reduce(
+              (total, entry) => total + parseFloat(entry.amount || '0'),
+              0,
+            )
+            .toFixed(2)}
+        </Text>
+
+        <View style={{marginTop: 24, height: 120}}>
+          <BarChart
+            height={120}
+            barWidth={20}
+            barBorderRadius={6}
+            frontColor="#FF9F40"
+            data={monthlyTotals}
+            yAxisThickness={0}
+            xAxisThickness={0}
+            hideRules
+            noOfSections={5}
+            xAxisLabelTextStyle={{
+              color: '#E1D7F7',
+              fontSize: 10,
+              marginTop: 4,
+            }}
+            yAxisTextStyle={{color: '#E1D7F7', fontSize: 10}}
+          />
         </View>
       </View>
 
@@ -79,6 +114,7 @@ const ExpenseHistoryScreen = () => {
 };
 
 export default ExpenseHistoryScreen;
+
 const getStyles = (colors: any, isDark: boolean) =>
   StyleSheet.create({
     container: {
@@ -102,24 +138,6 @@ const getStyles = (colors: any, isDark: boolean) =>
       color: '#fff',
       fontSize: 28,
       fontWeight: 'bold',
-      marginTop: 4,
-    },
-    chartRow: {
-      flexDirection: 'row',
-      alignItems: 'flex-end',
-      justifyContent: 'space-between',
-      marginTop: 16,
-    },
-    chartItem: {
-      alignItems: 'center',
-    },
-    chartBar: {
-      width: 10,
-      borderRadius: 4,
-    },
-    chartMonth: {
-      color: '#E1D7F7',
-      fontSize: 10,
       marginTop: 4,
     },
     listContent: {
