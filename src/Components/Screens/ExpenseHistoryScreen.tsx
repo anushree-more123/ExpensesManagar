@@ -123,7 +123,7 @@ const getStyles = (colors: any, isDark: boolean) =>
       backgroundColor: colors.background,
     },
     card: {
-      backgroundColor: isDark ? '#5A31A6' : '#4B1FA2',
+      backgroundColor: colors['900'],
       borderRadius: 24,
       padding: 20,
       marginHorizontal: 20,
