@@ -80,7 +80,9 @@ const ExpenseDetailsForm: React.FC<ExpenseDetailsFormProps> = ({
           <View style={styles.inputRow}>
             <Icon name="calendar" size={20} style={styles.inputIcon} />
             <Text style={styles.input}>
-              {expenseDetails.date.toDateString()}
+              {typeof expenseDetails.date === 'string'
+                ? new Date(expenseDetails.date).toDateString()
+                : expenseDetails.date.toDateString()}
             </Text>
           </View>
         </TouchableOpacity>
@@ -99,7 +101,11 @@ const ExpenseDetailsForm: React.FC<ExpenseDetailsFormProps> = ({
 
         {showDatePicker && (
           <DateTimePicker
-            value={expenseDetails.date}
+            value={
+              typeof expenseDetails.date === 'string'
+                ? new Date(expenseDetails.date)
+                : expenseDetails.date
+            }
             mode="date"
             onChange={onChangeDate}
             display="spinner"

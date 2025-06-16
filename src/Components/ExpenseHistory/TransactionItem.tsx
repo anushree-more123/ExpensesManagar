@@ -1,29 +1,41 @@
+import {useNavigation} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
 import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import {useTheme} from 'react-native-paper';
 // @ts-ignore
 import Icon from 'react-native-vector-icons/FontAwesome6';
+import {RootStackParamList} from '../Navigation/navigationTypes';
 
+type NavigationProp = StackNavigationProp<RootStackParamList, 'UpdateExpenses'>;
 interface TransactionItemProps {
   item: any;
 }
 
 const TransactionItem: React.FC<TransactionItemProps> = ({item}) => {
+  const navigation = useNavigation<NavigationProp>();
   const {colors} = useTheme();
   const styles = getStyles(colors);
   return (
-    <View style={styles.transactionItem}>
-      <View style={[styles.iconWrapper, {backgroundColor: item.color}]}>
-        <Icon name={item.icon} size={18} color="#fff" />
+    <TouchableOpacity
+      onPress={() => {
+        navigation.navigate('UpdateExpenses', {
+          expenseDetails: item,
+        });
+      }}>
+      <View style={styles.transactionItem}>
+        <View style={[styles.iconWrapper, {backgroundColor: item.color}]}>
+          <Icon name={item.icon} size={18} color="#fff" />
+        </View>
+        <View style={{flex: 1}}>
+          <Text style={styles.transactionTitle}>{item.title}</Text>
+          <Text style={styles.transactionSubtitle}>{item.subtitle}</Text>
+        </View>
+        <View style={{alignItems: 'flex-end'}}>
+          <Text style={styles.transactionAmount}>₹{item.amount}</Text>
+        </View>
       </View>
-      <View style={{flex: 1}}>
-        <Text style={styles.transactionTitle}>{item.title}</Text>
-        <Text style={styles.transactionSubtitle}>{item.subtitle}</Text>
-      </View>
-      <View style={{alignItems: 'flex-end'}}>
-        <Text style={styles.transactionAmount}>{item.amount}</Text>
-      </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -44,7 +56,6 @@ const getStyles = (colors: any) =>
     },
     transactionTitle: {
       fontSize: 14,
-      color: colors.text,
       fontFamily: 'Roboto-Bold',
     },
     transactionSubtitle: {
@@ -53,7 +64,6 @@ const getStyles = (colors: any) =>
       fontFamily: 'Roboto-Regular',
     },
     transactionAmount: {
-      color: colors.text,
       fontFamily: 'Roboto-Bold',
     },
   });

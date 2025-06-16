@@ -1,23 +1,46 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, TouchableOpacity, StyleSheet, Platform} from 'react-native';
 // @ts-ignore
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {useTheme} from 'react-native-paper';
 import {useDispatch} from 'react-redux';
 import uuid from 'react-native-uuid';
-import {addExpenseHistory} from '../AddExpanses/expensesSlice';
-import AmountDisplay from '../AddExpanses/AmountDisplay';
-import CalculatorKeyboard from '../AddExpanses/CalculatorKeyboard';
-import ExpenseDetailsForm from '../AddExpanses/ExpenseDetailsForm';
+import {
+  addExpenseHistory,
+  ExpenseEntry,
+  updateExpenseHistory,
+} from '../CreateExpenses/expensesSlice';
+import AmountDisplay from '../CreateExpenses/AmountDisplay';
+import CalculatorKeyboard from '../CreateExpenses/CalculatorKeyboard';
+import ExpenseDetailsForm from '../CreateExpenses/ExpenseDetailsForm';
 
-const AddExpenseScreen = ({navigation}: any) => {
+const AddUpdateExpenseScreen = ({navigation, route}: any) => {
   const dispatch = useDispatch();
   const {colors} = useTheme();
   const styles = getStyles(colors);
-  const initialState = {amount: '', note: '', date: new Date(), category: ''};
+  const initialState = {
+    amount: '',
+    note: '',
+    date: new Date(),
+    category: '',
+  };
   const [expenseDetails, setExpenseDetails] = useState({...initialState});
   const [showDetails, setShowDetails] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
+
+  useEffect(() => {
+    if (route.name === 'UpdateExpenses' && route.params) {
+      const expense = route.params.expenseDetails;
+      const cpyExpense = {
+        amount: expense.amount,
+        note: expense.title,
+        date: expense.date,
+        category: expense.subtitle,
+        id: expense.id,
+      };
+      setExpenseDetails({...cpyExpense});
+    }
+  }, [route]);
 
   const handleKeyPress = (key: string) => {
     const operators = ['+', '-', '*', '/', '.'];
@@ -77,17 +100,29 @@ const AddExpenseScreen = ({navigation}: any) => {
 
   const saveExpense = () => {
     if (expenseDetails.amount.length > 0) {
-      let cpyExpenseD = {
-        id: uuid.v4(),
-        ...expenseDetails,
-        date: expenseDetails.date.toISOString(),
-      };
+      if (route.name === 'UpdateExpenses') {
+        let cpyExpenseD = {
+          ...expenseDetails,
+          date:
+            typeof expenseDetails.date === 'string'
+              ? expenseDetails.date
+              : expenseDetails.date.toISOString(),
+        };
+        dispatch(updateExpenseHistory(cpyExpenseD));
+      } else {
+        let cpyExpenseD = {
+          id: uuid.v4(),
+          ...expenseDetails,
+          date: expenseDetails.date.toISOString(),
+        };
 
-      if (cpyExpenseD.category.length === 0) {
-        cpyExpenseD.category = 'Others';
+        if (cpyExpenseD.category.length === 0) {
+          cpyExpenseD.category = 'Others';
+        }
+
+        dispatch(addExpenseHistory(cpyExpenseD));
       }
 
-      dispatch(addExpenseHistory(cpyExpenseD));
       closeAddExpenses();
     }
   };
@@ -139,4 +174,4 @@ const getStyles = (colors: any) =>
     flexArea: {flexGrow: 1, justifyContent: 'flex-end'},
   });
 
-export default AddExpenseScreen;
+export default AddUpdateExpenseScreen;

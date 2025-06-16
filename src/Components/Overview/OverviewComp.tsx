@@ -130,7 +130,6 @@ const getStyles = (colors: any, isDark: boolean) =>
     },
     title: {
       fontSize: 24,
-      color: colors.text,
       fontWeight: 'bold',
     },
     card: {
@@ -140,7 +139,6 @@ const getStyles = (colors: any, isDark: boolean) =>
     },
     amount: {
       fontSize: 30,
-      color: colors.text,
       fontWeight: 'bold',
       marginBottom: 10,
       padding: 20,
@@ -149,7 +147,6 @@ const getStyles = (colors: any, isDark: boolean) =>
       borderRadius: 12,
     },
     subtitle: {
-      color: colors.text,
       fontSize: 16,
       fontWeight: 'bold',
       marginBottom: 10,
@@ -174,7 +171,6 @@ const getStyles = (colors: any, isDark: boolean) =>
       flex: 1,
     },
     type: {
-      color: colors.text,
       fontWeight: 'bold',
     },
     date: {
@@ -185,7 +181,6 @@ const getStyles = (colors: any, isDark: boolean) =>
       alignItems: 'flex-end',
     },
     amountText: {
-      color: colors.text,
       fontWeight: 'bold',
     },
     balance: {

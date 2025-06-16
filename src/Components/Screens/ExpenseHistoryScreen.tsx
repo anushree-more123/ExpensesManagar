@@ -66,7 +66,6 @@ const getStyles = (colors: any) =>
       fontSize: 16,
       marginTop: 20,
       marginBottom: 10,
-      color: colors.text,
       fontFamily: 'Roboto-Bold',
     },
   });
