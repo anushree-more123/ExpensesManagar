@@ -15,8 +15,9 @@ type SectionListData = {
 export const getFormattedHistory = (
   expenseHistory: ExpenseEntry[],
 ): SectionListData[] => {
-  // Group by formatted date (e.g., 'Today', '08 April')
-  const grouped: {[date: string]: SectionListData['data']} = {};
+  const grouped: {
+    [date: string]: (SectionListData['data'][0] & {timestamp: number})[];
+  } = {};
 
   expenseHistory.forEach(entry => {
     const dateObj = new Date(entry.date);
@@ -46,9 +47,15 @@ export const getFormattedHistory = (
       title: entry.note || entry.category,
       subtitle: entry.category,
       amount: `-₹${entry.amount}`,
+      timestamp: new Date(entry.date).getTime(), // add timestamp
     });
   });
 
-  // Convert grouped object to array
-  return Object.entries(grouped).map(([title, data]) => ({title, data}));
+  // Convert to array and sort each group by timestamp descending
+  return Object.entries(grouped).map(([title, rawData]) => ({
+    title,
+    data: rawData
+      .sort((a, b) => b.timestamp - a.timestamp) // sort within each group
+      .map(({timestamp, ...rest}) => rest), // remove timestamp before returning
+  }));
 };

@@ -18,8 +18,8 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import {Button, useTheme} from 'react-native-paper';
 import {useDispatch, useSelector} from 'react-redux';
 import {addExpenseHistory} from '../AddExpanses/expensesSlice';
-import {RootState} from '../../Store/store';
 import {categories} from '../Constants/categories';
+import uuid from 'react-native-uuid';
 
 interface AddExpenseScreenProps {
   navigation: any;
@@ -147,6 +147,7 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
   const saveExpense = () => {
     if (expenseDetails.amount.length > 0) {
       let cpyExpenseD = {
+        id: uuid.v4(),
         ...expenseDetails,
         date: expenseDetails.date.toISOString(),
       };
@@ -305,8 +306,16 @@ const getStyles = (colors: any) =>
       marginTop: 30,
     },
     amountContainer: {flexDirection: 'row', alignItems: 'flex-end'},
-    currencySymbol: {fontSize: 20, color: '#888', marginRight: 4},
-    amountText: {fontSize: 48},
+    currencySymbol: {
+      fontSize: 20,
+      color: '#888',
+      marginRight: 4,
+      fontFamily: 'Roboto-Regular',
+    },
+    amountText: {
+      fontSize: 48,
+      fontFamily: 'Roboto-Medium',
+    },
     flexArea: {
       flexGrow: 1,
       justifyContent: 'flex-end',
@@ -326,14 +335,18 @@ const getStyles = (colors: any) =>
       margin: '1%',
       height: 80,
     },
-    keyText: {fontSize: 30, color: colors['100']},
+    keyText: {fontSize: 30, color: colors['100'], fontFamily: 'Roboto-Regular'},
     detailsContainer: {
       flexGrow: 1,
       paddingTop: 30,
       paddingBottom: 80,
       paddingHorizontal: 20,
     },
-    sectionLabel: {fontSize: 16, marginBottom: 10, fontWeight: '500'},
+    sectionLabel: {
+      fontSize: 16,
+      marginBottom: 10,
+      fontFamily: 'Roboto-Bold',
+    },
     categoryGrid: {
       flexDirection: 'row',
       flexWrap: 'wrap',
@@ -349,7 +362,7 @@ const getStyles = (colors: any) =>
       height: 100,
       justifyContent: 'center',
     },
-    categoryLabel: {marginTop: 6, fontSize: 14},
+    categoryLabel: {marginTop: 6, fontSize: 14, fontFamily: 'Roboto-Regular'},
     inputRow: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -357,7 +370,12 @@ const getStyles = (colors: any) =>
       marginBottom: 20,
     },
     inputIcon: {marginRight: 8, color: '#555'},
-    input: {flex: 1, fontSize: 16, paddingVertical: 8},
+    input: {
+      flex: 1,
+      fontSize: 16,
+      paddingVertical: 8,
+      fontFamily: 'Roboto-Regular',
+    },
     saveButton: {
       marginTop: 20,
       borderRadius: 8,
