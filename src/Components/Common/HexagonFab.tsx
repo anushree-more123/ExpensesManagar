@@ -9,7 +9,7 @@ const HexagonFAB = ({onPress}: {onPress: () => void}) => {
   const {colors} = useTheme();
 
   return (
-    <View style={styles.wrapper}>
+    <TouchableOpacity style={styles.wrapper} onPress={onPress}>
       <Svg height="76" width="76" viewBox="0 0 100 100" style={styles.hexagon}>
         <Defs>
           <LinearGradient id="grad" x1="0" y1="0" x2="1" y2="1">
@@ -26,10 +26,8 @@ const HexagonFAB = ({onPress}: {onPress: () => void}) => {
         />
       </Svg>
 
-      <TouchableOpacity style={styles.touchable} onPress={onPress}>
-        <Icon name="plus" size={20} color="#fff" />
-      </TouchableOpacity>
-    </View>
+      <Icon name="plus" size={20} color="#fff" />
+    </TouchableOpacity>
   );
 };
 
@@ -47,10 +45,5 @@ const styles = StyleSheet.create({
   },
   hexagon: {
     position: 'absolute',
-  },
-  touchable: {
-    position: 'absolute',
-    top: 28,
-    alignSelf: 'center',
   },
 });
