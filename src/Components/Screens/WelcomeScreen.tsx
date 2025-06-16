@@ -31,14 +31,15 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 32,
-    fontWeight: 'bold',
     marginBottom: 12,
+    fontFamily: 'Roboto-Bold',
   },
   subtitle: {
     fontSize: 16,
     color: '#333',
     textAlign: 'left',
     lineHeight: 24,
+    fontFamily: 'Roboto-regular',
   },
   plus: {
     fontWeight: 'bold',

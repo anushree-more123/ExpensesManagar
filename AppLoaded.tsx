@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {useSelector} from 'react-redux';
 import {RootState} from './src/Store/store';
-import AppIntroSlides from './src/Components/AppIntro/AppIntroSlides';
+import AppIntroSlides from './src/Components/Screens/AppIntroSlides';
 import Navigator from './src/Components/Navigation/Navigator';
 
 const AppLoaded = () => {

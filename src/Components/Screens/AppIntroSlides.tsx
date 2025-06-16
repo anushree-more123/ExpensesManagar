@@ -90,14 +90,15 @@ const getStyles = (colors: any) =>
     title: {
       color: colors.onBackground,
       fontSize: 22,
-      fontWeight: 'bold',
       textAlign: 'center',
       marginBottom: 10,
+      fontFamily: 'Roboto-Bold',
     },
     text: {
       color: colors.onSurface,
       fontSize: 16,
       textAlign: 'center',
+      fontFamily: 'Roboto-Regular',
     },
     dot: {
       backgroundColor: colors.outline + '66',
@@ -124,7 +125,7 @@ const getStyles = (colors: any) =>
     buttonText: {
       color: '#fff',
       fontSize: 16,
-      fontWeight: 'bold',
+      fontFamily: 'Roboto-Bold',
     },
   });
 

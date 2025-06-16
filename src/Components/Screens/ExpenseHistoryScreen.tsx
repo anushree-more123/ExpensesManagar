@@ -31,7 +31,7 @@ const ExpenseHistoryScreen = () => {
   );
 
   const formattedHistory = getFormattedHistory(expenseHistory);
-
+  console.log('formattedHistory', formattedHistory);
   const renderItem = ({item}: any) => (
     <View style={styles.transactionItem}>
       <View style={[styles.iconWrapper, {backgroundColor: item.color}]}>
@@ -43,7 +43,6 @@ const ExpenseHistoryScreen = () => {
       </View>
       <View style={{alignItems: 'flex-end'}}>
         <Text style={styles.transactionAmount}>{item.amount}</Text>
-        <Text style={styles.transactionTax}>{item.tax}</Text>
       </View>
     </View>
   );
@@ -52,19 +51,35 @@ const ExpenseHistoryScreen = () => {
     <Text style={styles.sectionHeader}>{title}</Text>
   );
 
+  console.log('expenseHistory', expenseHistory);
+  const currentYear = moment().year(); // e.g. 2025
+
   const monthlyTotals: BarDataItem[] = Object.values(
-    expenseHistory.reduce((acc: Record<string, BarDataItem>, entry) => {
-      const month = moment(entry.date).format('MMM');
-      const amount = parseFloat(entry.amount);
-      if (!acc[month]) {
-        acc[month] = {label: month, value: 0};
-      }
-      acc[month].value += isNaN(amount) ? 0 : amount;
-      return acc;
-    }, {}),
+    expenseHistory
+      .filter(entry => moment(entry.date).year() === currentYear) // only current year
+      .reduce((acc: Record<string, BarDataItem>, entry) => {
+        const month = moment(entry.date).format('MMM');
+
+        const rawAmount =
+          typeof entry.amount === 'number'
+            ? entry.amount
+            : parseFloat(entry.amount);
+
+        const amount = isNaN(rawAmount) ? 0 : rawAmount;
+
+        if (!acc[month]) {
+          acc[month] = {label: month, value: 0};
+        }
+
+        acc[month].value += amount;
+
+        return acc;
+      }, {}),
   ).sort(
     (a, b) => moment(a.label, 'MMM').month() - moment(b.label, 'MMM').month(),
   );
+
+  console.log('monthlyTotals (cleaned):', monthlyTotals);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -83,10 +98,10 @@ const ExpenseHistoryScreen = () => {
 
         <View style={{marginTop: 24, height: 120}}>
           <BarChart
-            height={120}
+            height={110}
             barWidth={20}
             barBorderRadius={6}
-            frontColor="#FF9F40"
+            frontColor={colors['300']}
             data={monthlyTotals}
             yAxisThickness={0}
             xAxisThickness={0}
@@ -95,7 +110,6 @@ const ExpenseHistoryScreen = () => {
             xAxisLabelTextStyle={{
               color: '#E1D7F7',
               fontSize: 10,
-              marginTop: 4,
             }}
             yAxisTextStyle={{color: '#E1D7F7', fontSize: 10}}
           />
@@ -133,12 +147,13 @@ const getStyles = (colors: any, isDark: boolean) =>
     cardTitle: {
       color: '#E1D7F7',
       fontSize: 16,
+      fontFamily: 'Roboto-Regular',
     },
     cardAmount: {
       color: '#fff',
       fontSize: 28,
-      fontWeight: 'bold',
       marginTop: 4,
+      fontFamily: 'Roboto-Bold',
     },
     listContent: {
       paddingHorizontal: 20,
@@ -146,10 +161,10 @@ const getStyles = (colors: any, isDark: boolean) =>
     },
     sectionHeader: {
       fontSize: 16,
-      fontWeight: 'bold',
       marginTop: 20,
       marginBottom: 10,
       color: colors.text,
+      fontFamily: 'Roboto-Bold',
     },
     transactionItem: {
       flexDirection: 'row',
@@ -166,19 +181,16 @@ const getStyles = (colors: any, isDark: boolean) =>
     },
     transactionTitle: {
       fontSize: 14,
-      fontWeight: '600',
       color: colors.text,
+      fontFamily: 'Roboto-Bold',
     },
     transactionSubtitle: {
       fontSize: 12,
       color: colors.placeholder,
+      fontFamily: 'Roboto-Regular',
     },
     transactionAmount: {
-      fontWeight: 'bold',
       color: colors.text,
-    },
-    transactionTax: {
-      fontSize: 12,
-      color: colors.placeholder,
+      fontFamily: 'Roboto-Bold',
     },
   });
