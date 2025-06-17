@@ -1,7 +1,7 @@
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import MainTabNavigator from './MainTabNavigator';
-import AddExpenseScreen from '../Screens/AddExpenseScreen';
+import AddUpdateExpenseScreen from '../Screens/AddUpdateExpenseScreen';
 
 const Stack = createStackNavigator();
 
@@ -18,7 +18,14 @@ const Navigator = () => {
         />
         <Stack.Screen
           name="AddExpenses"
-          component={AddExpenseScreen}
+          component={AddUpdateExpenseScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="UpdateExpenses"
+          component={AddUpdateExpenseScreen}
           options={{
             headerShown: false,
           }}

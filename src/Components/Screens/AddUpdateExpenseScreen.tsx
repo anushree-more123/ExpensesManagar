@@ -1,23 +1,46 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, TouchableOpacity, StyleSheet, Platform} from 'react-native';
 // @ts-ignore
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {useTheme} from 'react-native-paper';
 import {useDispatch} from 'react-redux';
 import uuid from 'react-native-uuid';
-import {addExpenseHistory} from '../AddExpanses/expensesSlice';
-import AmountDisplay from '../AddExpanses/AmountDisplay';
-import CalculatorKeyboard from '../AddExpanses/CalculatorKeyboard';
-import ExpenseDetailsForm from '../AddExpanses/ExpenseDetailsForm';
+import {
+  addExpenseHistory,
+  ExpenseEntry,
+  updateExpenseHistory,
+} from '../CreateExpenses/expensesSlice';
+import AmountDisplay from '../CreateExpenses/AmountDisplay';
+import CalculatorKeyboard from '../CreateExpenses/CalculatorKeyboard';
+import ExpenseDetailsForm from '../CreateExpenses/ExpenseDetailsForm';
 
-const AddExpenseScreen = ({navigation}: any) => {
+const AddUpdateExpenseScreen = ({navigation, route}: any) => {
   const dispatch = useDispatch();
   const {colors} = useTheme();
   const styles = getStyles(colors);
-  const initialState = {amount: '', note: '', date: new Date(), category: ''};
+  const initialState = {
+    amount: '',
+    note: '',
+    date: new Date(),
+    category: '',
+  };
   const [expenseDetails, setExpenseDetails] = useState({...initialState});
   const [showDetails, setShowDetails] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
+
+  useEffect(() => {
+    if (route.name === 'UpdateExpenses' && route.params) {
+      const expense = route.params.expenseDetails;
+      const cpyExpense = {
+        amount: expense.amount,
+        note: expense.title,
+        date: expense.date,
+        category: expense.subtitle,
+        id: expense.id,
+      };
+      setExpenseDetails({...cpyExpense});
+    }
+  }, [route]);
 
   const handleKeyPress = (key: string) => {
     const operators = ['+', '-', '*', '/', '.'];
@@ -77,17 +100,29 @@ const AddExpenseScreen = ({navigation}: any) => {
 
   const saveExpense = () => {
     if (expenseDetails.amount.length > 0) {
-      let cpyExpenseD = {
-        id: uuid.v4(),
-        ...expenseDetails,
-        date: expenseDetails.date.toISOString(),
-      };
+      if (route.name === 'UpdateExpenses') {
+        let cpyExpenseD = {
+          ...expenseDetails,
+          date:
+            typeof expenseDetails.date === 'string'
+              ? expenseDetails.date
+              : expenseDetails.date.toISOString(),
+        };
+        dispatch(updateExpenseHistory(cpyExpenseD));
+      } else {
+        let cpyExpenseD = {
+          id: uuid.v4(),
+          ...expenseDetails,
+          date: expenseDetails.date.toISOString(),
+        };
 
-      if (cpyExpenseD.category.length === 0) {
-        cpyExpenseD.category = 'Others';
+        if (cpyExpenseD.category.length === 0) {
+          cpyExpenseD.category = 'Others';
+        }
+
+        dispatch(addExpenseHistory(cpyExpenseD));
       }
 
-      dispatch(addExpenseHistory(cpyExpenseD));
       closeAddExpenses();
     }
   };
@@ -136,93 +171,7 @@ const getStyles = (colors: any) =>
   StyleSheet.create({
     container: {flex: 1, backgroundColor: '#fff', paddingTop: 20},
     header: {flexDirection: 'row', justifyContent: 'space-between'},
-    amountMainContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      marginTop: 30,
-    },
-    amountContainer: {flexDirection: 'row', alignItems: 'flex-end'},
-    currencySymbol: {
-      fontSize: 20,
-      color: '#888',
-      marginRight: 4,
-      fontFamily: 'Roboto-Regular',
-    },
-    amountText: {
-      fontSize: 48,
-      fontFamily: 'Roboto-Medium',
-    },
     flexArea: {flexGrow: 1, justifyContent: 'flex-end'},
-    keyboard: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      justifyContent: 'space-between',
-      padding: 10,
-      backgroundColor: colors['900'],
-      marginBottom: 0,
-    },
-    keyButton: {
-      width: '22%',
-      justifyContent: 'center',
-      alignItems: 'center',
-      margin: '1%',
-      height: 80,
-    },
-    keyText: {
-      fontSize: 30,
-      color: colors['100'],
-      fontFamily: 'Roboto-Regular',
-    },
-    detailsContainer: {
-      flexGrow: 1,
-      paddingTop: 30,
-      paddingBottom: 80,
-      paddingHorizontal: 20,
-    },
-    sectionLabel: {
-      fontSize: 16,
-      marginBottom: 10,
-      fontFamily: 'Roboto-Bold',
-    },
-    categoryGrid: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      justifyContent: 'space-between',
-    },
-    categoryButton: {
-      width: '32%',
-      backgroundColor: '#eee',
-      padding: 10,
-      marginBottom: '2%',
-      borderRadius: 8,
-      alignItems: 'center',
-      height: 100,
-      justifyContent: 'center',
-    },
-    categoryLabel: {
-      marginTop: 6,
-      fontSize: 14,
-      fontFamily: 'Roboto-Regular',
-    },
-    inputRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      borderBottomWidth: 1,
-      marginBottom: 20,
-    },
-    inputIcon: {marginRight: 8, color: '#555'},
-    input: {
-      flex: 1,
-      fontSize: 16,
-      paddingVertical: 8,
-      fontFamily: 'Roboto-Regular',
-    },
-    saveButton: {
-      marginTop: 20,
-      borderRadius: 8,
-      backgroundColor: colors['700'],
-    },
   });
 
-export default AddExpenseScreen;
+export default AddUpdateExpenseScreen;
